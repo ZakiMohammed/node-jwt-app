@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Login</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+
+<body class="d-none">
+
+    <div class="container my-5">
+        <div class="row">
+            <div class="col">
+                <h1>Login</h1>
+                <form class="mt-4">
+                    <div class="form-group">
+                        <label for="userName">User Name</label>
+                        <input type="text" class="form-control" name="userName" id="userName" aria-describedby="helpId"
+                            placeholder="Enter Username">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" name="password" id="password"
+                            aria-describedby="helpId" placeholder="Enter password">
+                    </div>
+                    <button class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        $(function () {
+            const user = localStorage.getItem(CONSTANTS.LOCAL_STORAGE_KEY);
+            if (user) {
+                location.href = `${CONSTANTS.APP_URL}index.html`;
+            } else {
+                $('body').removeClass('d-none');
+            }
+        });
+
+        $('button').click(function (event) {
+            event.preventDefault();
+            const userName = $('#userName').val();
+            const password = $('#password').val();
+
+            if (!userName || !password) {
+                alert('Please fill form')
+                return;
+            }
+
+            const data = {
+                userName,
+                password
+            };
+            console.log(data);
+
+            $.ajax({
+                url: `${CONSTANTS.API_URL}accounts/login`,
+                type: 'POST',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify(data),
+                success: (response) => {
+                    console.log(response);
+                    localStorage.setItem(CONSTANTS.LOCAL_STORAGE_KEY, JSON.stringify(response));
+                    location.href = `${CONSTANTS.APP_URL}index.html`;
+                },
+                error: (error) => {
+                    if (error.status === 401) {
+                        alert('Invalid credentials');
+                    } else {
+                        alert('Something went wrong')
+                    }
+                }
+            })
+        })
+    </script>
+</body>
+
+</html>
